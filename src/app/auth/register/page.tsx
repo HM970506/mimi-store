@@ -9,7 +9,12 @@ import { Button, Form, Input } from "antd";
 function Register() {
   return (
     <div className="flex justify-center align-top">
-      <div className="relative top-10 text-center gap-5 flex flex-col w-1/4">
+      <div
+        className="relative top-10 text-center gap-5 
+      flex flex-col w-1/2
+      mobile:w-1/4
+      "
+      >
         <h1>Register</h1>
         <Form>
           <Form.Item name="name">

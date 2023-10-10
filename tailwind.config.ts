@@ -16,6 +16,9 @@ const config: Config = {
       colors: {
         primary: "#000",
       },
+      screens: {
+        mobile: "960px",
+      },
     },
   },
   plugins: [],
