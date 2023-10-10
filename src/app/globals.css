@@ -1,3 +1,4 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*테일윈드를 쓰기 위해서는 글로벌css에 명시해 주어야 함.*/
