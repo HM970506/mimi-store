@@ -3,6 +3,7 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 import Link from "next/link";
+import { requiredRule } from "@/app/message/validations";
 
 interface RegisterFormType {
   name: string;
@@ -27,13 +28,13 @@ function Register() {
       >
         <h1>Register</h1>
         <Form onFinish={onRegister}>
-          <Form.Item name="name">
+          <Form.Item name="name" rules={requiredRule("name")}>
             <Input placeholder={"Name"} />
           </Form.Item>
-          <Form.Item name="email">
+          <Form.Item name="email" rules={requiredRule("email")}>
             <Input placeholder={"Email"} />
           </Form.Item>
-          <Form.Item name="password">
+          <Form.Item name="password" rules={requiredRule("password")}>
             <Input.Password placeholder={"Password"} />
           </Form.Item>
           <Form.Item>
