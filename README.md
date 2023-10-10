@@ -16,7 +16,7 @@
 - mongoose
 - firebase
 
-### AUTHIFICATION
+### AUTHDENTIFICATION
 
 - bcryptjs
 - jsonwebtoken
