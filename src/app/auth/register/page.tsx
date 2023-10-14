@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
-import { Button, Form, Input } from "antd";
+import React, { useState } from "react";
+import { Button, Form, Input, message } from "antd";
 import Link from "next/link";
 import { requiredRule } from "@/app/message/validations";
+import axios from "axios";
 
 interface RegisterFormType {
   name: string;
@@ -15,8 +16,20 @@ interface RegisterFormType {
 //ssr은 사용자와 intercation할 수 없다.
 //거기다 왜인지..form.item이 next13에서 에러가 난다. form 태그 고유의 현상인가? 아니면 해당 컴포넌트의 문제인가?
 function Register() {
-  const onRegister = (value: RegisterFormType) => {
-    console.log(value);
+  const [loading, setLoading] = useState(false);
+
+  const onRegister = async (value: RegisterFormType) => {
+    //나중에 fe api로 분리하자
+    try {
+      setLoading(true);
+      await axios.post("/api/auth/register", value);
+      message.success("계정 생성 성공");
+    } catch (e) {
+      console.error(e);
+      message.error("계정 생성 실패");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="flex justify-center align-top">
@@ -38,7 +51,7 @@ function Register() {
             <Input.Password placeholder={"Password"} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" block loading={loading}>
               Register
             </Button>
           </Form.Item>

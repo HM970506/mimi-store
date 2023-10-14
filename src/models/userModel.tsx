@@ -1,6 +1,6 @@
 //사용자 주문, 제품, 카테고리 등의 db table 모델을 생성
 
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 export const userSchema = new mongoose.Schema(
   {
@@ -16,4 +16,6 @@ export const userSchema = new mongoose.Schema(
   }
 );
 
-export default  mongoose.models["users"] || mongoose.model("users", userSchema));
+const User = mongoose.models["users"] || mongoose.model("users", userSchema);
+
+export default User;
