@@ -1,9 +1,12 @@
 "use client";
 
 import { requiredRule } from "@/app/message/validations";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
 interface LoginType {
   name: string;
   password: string;
@@ -11,8 +14,22 @@ interface LoginType {
 }
 
 function Login() {
-  const onLogin = (value: LoginType) => {
-    console.log(value);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const onLogin = async (value: LoginType) => {
+    //여기도 나중에 분리
+    try {
+      setLoading(true);
+      await axios.post("/api/auth/login", value);
+      message.success("로그인 성공");
+      router.push("/");
+    } catch (e) {
+      console.error(e);
+      message.error("로그인 실패");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="flex justify-center align-top">
@@ -31,7 +48,7 @@ function Login() {
             <Input.Password placeholder={"Password"} />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" block loading={loading}>
               Login
             </Button>
           </Form.Item>
