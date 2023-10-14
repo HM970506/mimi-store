@@ -23,6 +23,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: "유저 생성 완료", data: newUser });
   } catch (e) {
-    console.error(e);
+    return NextResponse.error();
   }
 }
