@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     //로그인 토큰 생성
     //로컬 스토리지에 저장시 api 호출마다 수동 첨부해야 하지만, 쿠키는 브라우저가 자동으로 첨부해서 보낸다!
     const token = jwt.sign({ id: user._id }, process.env.jwt_secret!, {
-      algorithm: "none",
+      expiresIn: "10m",
     });
 
     const response = NextResponse.json({ message: "로그인 성공" });
