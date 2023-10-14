@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
 
     const userExists = await User.findOne({ email: reqBody.email });
-
     if (userExists) throw new Error("존재하는 계정입니다");
 
     //pw 암호화
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
     const hashedPw = await bcrypt.hash(reqBody.password, salt);
     reqBody.password = hashedPw;
 
-    const newUser = new User(request.body);
+    const newUser = new User(reqBody);
     await newUser.save();
 
     return NextResponse.json({ message: "유저 생성 완료", data: newUser });
