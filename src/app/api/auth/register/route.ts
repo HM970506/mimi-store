@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     await newUser.save();
 
     return NextResponse.json({ message: "유저 생성 완료", data: newUser });
-  } catch (e) {
-    return NextResponse.error();
+  } catch (e: any) {
+    return NextResponse.json({ message: e.message }, { status: 404 });
   }
 }
