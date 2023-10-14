@@ -1,6 +1,6 @@
 "use client";
 
-import { requiredRule } from "@/app/message/validations";
+import { requiredRule } from "@/helpers/validations";
 import { Button, Form, Input, message } from "antd";
 import Link from "next/link";
 import React, { useState } from "react";

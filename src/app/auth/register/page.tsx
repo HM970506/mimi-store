@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import Link from "next/link";
-import { requiredRule } from "@/app/message/validations";
+import { requiredRule } from "@/helpers/validations";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
