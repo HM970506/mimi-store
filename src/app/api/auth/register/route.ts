@@ -20,6 +20,8 @@ export async function POST(request: NextRequest) {
 
     const newUser = new User(request.body);
     await newUser.save();
+
+    return NextResponse.json({ message: "유저 생성 완료", data: newUser });
   } catch (e) {
     console.error(e);
   }
