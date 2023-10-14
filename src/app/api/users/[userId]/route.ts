@@ -6,12 +6,14 @@
 //get은 브라우저에서 api호출을 확인할 수 있으나 payload를 얻지 못하고,
 //post는 포스트맨에서만 호출을 확인할 수 있으나 payload를 얻을 수 있다.
 
+import { connectDB } from "@/configs/dbConfigs";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ParamsType {
   userId: string;
 }
-
+//db사용할 때마다 연결
+connectDB();
 export const GET = async (
   request: NextRequest,
   { params }: { params: ParamsType }
