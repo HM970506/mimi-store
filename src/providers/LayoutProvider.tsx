@@ -21,7 +21,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
   const [isPrivate, setIsPrivate] = useState(false);
   const [current, setCurrent] = useState("mail");
-  const user = useSelector((state: any) => state);
+  const { currentUser } = useSelector((state: any) => state.user);
 
   const router = useRouter();
 
@@ -72,7 +72,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
 
     {
       key: "mypage",
-      label: user.name,
+      label: currentUser.name,
       icon: <UserOutlined />,
       children: [
         {
@@ -136,7 +136,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      {isPrivate && user.name !== "" && (
+      {isPrivate && currentUser.name !== "" && (
         <Menu
           style={{
             display: "flex",
