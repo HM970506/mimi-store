@@ -13,13 +13,15 @@ import {
 import type { MenuProps } from "antd";
 import { Menu, message } from "antd";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { userAction } from "@/redux/userSlice";
 
 export default function LayoutProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-
+  const dispatch = useDispatch();
   const [isPrivate, setIsPrivate] = useState(false);
   const [current, setCurrent] = useState("mail");
-  const [user, setUser] = useState({ name: "" });
+  const user = useSelector((state: any) => state);
 
   const router = useRouter();
 
@@ -100,7 +102,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
           onClick: async () => {
             try {
               await axios.get("/api/auth/logout");
-              setUser({ name: "" });
+              dispatch(userAction.reset());
               message.success("로그아웃 되었습니다");
               router.push("/auth/login");
             } catch (e: any) {
@@ -116,7 +118,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
   const getUser = async () => {
     try {
       const response = await axios.get("/api/auth/currentuser");
-      setUser(response.data.data);
+      dispatch(userAction.setUser(response.data.data));
     } catch (e: any) {
       message.error(e.response.data.message);
     }

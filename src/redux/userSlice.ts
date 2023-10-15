@@ -2,11 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const userSlice = createSlice({
   name: "user",
-  initialState: { currentUser: null },
+  initialState: { name: "" },
 
   reducers: {
-    setCurrentUser: (state, action) => {
-      state.currentUser = action.payload;
+    setUser: (state, action) => {
+      state = action.payload;
+    },
+    reset: (state) => {
+      state = { name: "" };
     },
   },
 });
