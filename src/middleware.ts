@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   if (now === "/auth/login" || now === "/auth/register") isPublicRoute = true;
 
   const token = request.cookies.get("token")?.value;
-  console.log(now, token, isPublicRoute);
+
   if (!token && !isPublicRoute)
     return NextResponse.redirect(new URL("/auth/login", request.url));
   if (token && isPublicRoute)
