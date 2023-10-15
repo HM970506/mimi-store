@@ -1,6 +1,6 @@
 //nav바 제공
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import {
   AppstoreOutlined,
@@ -8,6 +8,7 @@ import {
   ShoppingCartOutlined,
   HeartOutlined,
   UserOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, message } from "antd";
@@ -19,6 +20,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [current, setCurrent] = useState("mail");
   const [user, setUser] = useState({ name: "" });
+  const router = useRouter();
 
   const items: MenuProps["items"] = [
     {
@@ -87,6 +89,21 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
           key: "setting",
           icon: <SettingOutlined />,
         },
+        {
+          label: "logout",
+          key: "logut",
+          icon: <LogoutOutlined />,
+          onClick: async () => {
+            try {
+              await axios.get("/api/auth/logout");
+              setUser({ name: "" });
+              message.success("로그아웃 되었습니다");
+              router.push("/auth/login");
+            } catch (e: any) {
+              message.error(e.response.data.message);
+            }
+          },
+        },
       ],
       style: { position: "absolute", right: 0, top: "8px" },
     },
@@ -111,11 +128,6 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
     if (isPrivate) getUser();
   }, [isPrivate]);
 
-  const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
-    setCurrent(e.key);
-  };
-
   return (
     <div>
       {isPrivate && (
@@ -125,7 +137,6 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onClick={onClick}
           selectedKeys={[current]}
           mode="horizontal"
           items={items}
