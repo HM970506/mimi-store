@@ -20,6 +20,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [current, setCurrent] = useState("mail");
   const [user, setUser] = useState({ name: "" });
+
   const router = useRouter();
 
   const items: MenuProps["items"] = [
@@ -85,9 +86,12 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
           onClick: () => {},
         },
         {
-          label: "setting",
-          key: "setting",
+          label: "profile",
+          key: "profile",
           icon: <SettingOutlined />,
+          onClick: () => {
+            router.push("/profile");
+          },
         },
         {
           label: "logout",
@@ -130,7 +134,7 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      {isPrivate && (
+      {isPrivate && user.name !== "" && (
         <Menu
           style={{
             display: "flex",
