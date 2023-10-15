@@ -11,6 +11,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: user });
   } catch (e: any) {
-    return NextResponse.json({ message: e.message }, { status: 400 });
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 }
