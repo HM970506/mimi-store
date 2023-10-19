@@ -10,9 +10,15 @@ const columns = [
   { title: " ", dataIndex: "button", key: "button" },
 ];
 
+interface categoryType {
+  name: string;
+  cnt: number;
+  button: any;
+}
+
 export default function CategoriesList() {
   const [datas, setDatas] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<categoryType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const newRef = useRef(null);
@@ -41,19 +47,57 @@ export default function CategoriesList() {
     }
   };
 
+  const deleteCategory = async (id: string) => {
+    try {
+      await axios.post("/api/categories/delete", { id: id });
+      await getDatas();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
+
+  const editCategory = async (id: string) => {
+    try {
+      await axios.post("/api/categories/edit", id);
+      await getDatas();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
+
   useEffect(() => {
     getDatas();
   }, []);
 
   useEffect(() => {
     if (datas.length) {
-      const processedData = datas.map((data: { name: string; cnt: number }) => {
-        return {
-          name: data.name,
-          cnt: data.cnt,
-          button: <Button>삭제</Button>,
-        };
-      });
+      const processedData: categoryType[] = datas.map(
+        (data: { name: string; cnt: number; _id: string }) => {
+          return {
+            name: data.name,
+            cnt: data.cnt,
+            button: (
+              <>
+                <Button
+                  onClick={() => {
+                    deleteCategory(data._id);
+                  }}
+                >
+                  Delete
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    editCategory(data._id);
+                  }}
+                >
+                  Edit
+                </Button>
+              </>
+            ),
+          };
+        }
+      );
       setCategories(processedData);
     }
   }, [datas]);
