@@ -2,6 +2,7 @@
 import { Tabs } from "antd";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import CategoriesList from "./component/CategoriesList";
 
 export default function Profile() {
   const { currentUser } = useSelector((state: any) => state.user);
@@ -15,6 +16,7 @@ export default function Profile() {
           </Tabs.TabPane>
           <Tabs.TabPane tab="Categories" key="2">
             Categories
+            <CategoriesList />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Orders" key="3">
             Orders
