@@ -1,40 +1,43 @@
 "use client";
-import { Tabs } from "antd";
-import { useEffect } from "react";
+import { Tabs, TabsProps } from "antd";
+import { Children, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CategoriesList from "./component/CategoriesList";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Profile() {
   const { currentUser } = useSelector((state: any) => state.user);
 
+  const adminItem: TabsProps["items"] = [
+    { key: "1", label: "Products", children: <div>Products</div> },
+    { key: "2", label: "Categories", children: <CategoriesList /> },
+    { key: "3", label: "Orders", children: <div>Orders</div> },
+    { key: "4", label: "Users", children: <div>Users</div> },
+  ];
+
+  const userItem = [
+    { key: "1", label: "Orders", children: <div>Orders</div> },
+    {
+      key: "2",
+      label: "Personal Information",
+      children: <div>Personal Information</div>,
+    },
+  ];
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const nowSection = searchParams.get("section") || "1";
+  const [nowTab, setNowTab] = useState(nowSection);
+
   return (
-    <Tabs defaultActiveKey="1">
-      {currentUser.isAdmin ? (
-        <>
-          <Tabs.TabPane tab="Products" key="1">
-            Products
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Categories" key="2">
-            Categories
-            <CategoriesList />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Orders" key="3">
-            Orders
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Users" key="4">
-            Users
-          </Tabs.TabPane>
-        </>
-      ) : (
-        <>
-          <Tabs.TabPane tab="Orders" key="1">
-            Orders
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Personal Information" key="2">
-            Personal Information
-          </Tabs.TabPane>
-        </>
-      )}
-    </Tabs>
+    <Tabs
+      defaultActiveKey="1"
+      items={currentUser.isAdmin ? adminItem : userItem}
+      activeKey={nowTab}
+      onChange={(key) => {
+        router.push(`/profile?section=${key}`);
+        setNowTab(key);
+      }}
+    />
   );
 }

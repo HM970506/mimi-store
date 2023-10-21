@@ -84,11 +84,13 @@ export default function CategoriesList() {
       const processedData: categoryType[] = datas.map(
         (data: { name: string; cnt: number; _id: string }, key: number) => {
           return {
+            key: key,
             name: data.name,
             cnt: data.cnt,
             button: (
               <div key={key}>
                 <Button
+                  key={"del" + key}
                   onClick={() => {
                     deleteCategory(data._id);
                   }}
@@ -96,6 +98,7 @@ export default function CategoriesList() {
                   Delete
                 </Button>
                 <Button
+                  key={"edit" + key}
                   type="primary"
                   onClick={() => {
                     setEditModal(data);
