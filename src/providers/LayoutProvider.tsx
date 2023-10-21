@@ -68,6 +68,9 @@ export default function LayoutProvider({ children }: { children: ReactNode }) {
     {
       label: "MIMI STORE",
       key: "title",
+      onClick: () => {
+        router.push("/");
+      },
     },
 
     {
