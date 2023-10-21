@@ -1,5 +1,5 @@
 import { Modal, Form, Input } from "antd";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 export default function CategoryEditModal({
   setEditModal,
@@ -12,6 +12,7 @@ export default function CategoryEditModal({
 }) {
   const [form] = Form.useForm();
   const inputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (inputRef.current && editData !== null)
@@ -19,7 +20,9 @@ export default function CategoryEditModal({
   }, [editData]);
 
   const onFinish = async (valuse: any) => {
+    setLoading(true);
     await editCategory({ ...editData, name: valuse.name });
+    setLoading(false);
     setEditModal(null);
   };
   return (
@@ -32,6 +35,7 @@ export default function CategoryEditModal({
         setEditModal(null);
       }}
       closable={false}
+      confirmLoading={loading}
     >
       <Form form={form} onFinish={onFinish}>
         <Form.Item name="name">

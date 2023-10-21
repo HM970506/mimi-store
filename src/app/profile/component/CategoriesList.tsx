@@ -21,6 +21,7 @@ export default function CategoriesList() {
   const [datas, setDatas] = useState([]);
   const [categories, setCategories] = useState<categoryType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [delLoading, setDelLoading] = useState(false); //여러개의 로딩상태를 띄우려면, 단순 id만 넣어서는 안됨
   const [editModal, setEditModal] = useState<any>(null);
 
   const newRef = useRef(null);
@@ -54,10 +55,13 @@ export default function CategoriesList() {
 
   const deleteCategory = async (id: string) => {
     try {
+      setDelLoading(true); //왜 안먹히지
       await axios.delete(`/api/categories/${id}`);
       await getDatas();
     } catch (e: any) {
       message.error(e.message);
+    } finally {
+      setDelLoading(false);
     }
   };
 
@@ -72,18 +76,24 @@ export default function CategoriesList() {
   };
 
   useEffect(() => {
+    console.log(delLoading);
+  }, [delLoading]);
+
+  useEffect(() => {
     if (datas.length) {
       const processedData: categoryType[] = datas.map(
-        (data: { name: string; cnt: number; _id: string }) => {
+        (data: { name: string; cnt: number; _id: string }, key: number) => {
           return {
             name: data.name,
             cnt: data.cnt,
             button: (
-              <>
+              <div key={key}>
                 <Button
                   onClick={() => {
+                    setDelLoading(true);
                     deleteCategory(data._id);
                   }}
+                  loading={delLoading}
                 >
                   Delete
                 </Button>
@@ -95,7 +105,7 @@ export default function CategoriesList() {
                 >
                   Edit
                 </Button>
-              </>
+              </div>
             ),
           };
         }
@@ -103,10 +113,6 @@ export default function CategoriesList() {
       setCategories(processedData);
     }
   }, [datas]);
-
-  useEffect(() => {
-    console.log(editModal);
-  }, [editModal]);
 
   return (
     <div>
