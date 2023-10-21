@@ -3,6 +3,7 @@
 import { Button, Form, Input, Modal, Table, message } from "antd";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import CategoryEditModal from "./CategoryEditModal";
 
 const columns = [
   { title: "카테고리명", dataIndex: "name", key: "name" },
@@ -20,8 +21,21 @@ export default function CategoriesList() {
   const [datas, setDatas] = useState([]);
   const [categories, setCategories] = useState<categoryType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editModal, setEditModal] = useState<any>(null);
 
   const newRef = useRef(null);
+
+  useEffect(() => {
+    getDatas();
+  }, []);
+  const getDatas = async () => {
+    try {
+      const response = await axios.post("/api/categories/get");
+      setDatas(response.data.data);
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
 
   const setNewCategory = async (value: any) => {
     if (value.name === "" || value.name === null) return;
@@ -38,36 +52,24 @@ export default function CategoriesList() {
     }
   };
 
-  const getDatas = async () => {
-    try {
-      const response = await axios.post("/api/categories/get");
-      setDatas(response.data.data);
-    } catch (e: any) {
-      message.error(e.message);
-    }
-  };
-
   const deleteCategory = async (id: string) => {
     try {
-      await axios.post("/api/categories/delete", { id: id });
+      await axios.delete(`/api/categories/${id}`);
       await getDatas();
     } catch (e: any) {
       message.error(e.message);
     }
   };
 
-  const editCategory = async (id: string) => {
+  const editCategory = async (data: any) => {
     try {
-      await axios.post("/api/categories/edit", id);
+      console.log(data);
+      await axios.put(`/api/categories/${data._id}`, { ...data });
       await getDatas();
     } catch (e: any) {
       message.error(e.message);
     }
   };
-
-  useEffect(() => {
-    getDatas();
-  }, []);
 
   useEffect(() => {
     if (datas.length) {
@@ -88,7 +90,7 @@ export default function CategoriesList() {
                 <Button
                   type="primary"
                   onClick={() => {
-                    editCategory(data._id);
+                    setEditModal(data);
                   }}
                 >
                   Edit
@@ -102,8 +104,18 @@ export default function CategoriesList() {
     }
   }, [datas]);
 
+  useEffect(() => {
+    console.log(editModal);
+  }, [editModal]);
+
   return (
     <div>
+      <CategoryEditModal
+        setEditModal={setEditModal}
+        editCategory={editCategory}
+        editData={editModal}
+      />
+
       <div className="flex justify-end">
         <Form layout="inline" onFinish={setNewCategory}>
           <Form.Item name="name">
