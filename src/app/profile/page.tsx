@@ -4,12 +4,13 @@ import { Children, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CategoriesList from "./component/CategoriesList";
 import { useRouter, useSearchParams } from "next/navigation";
+import ProductList from "./component/ProductList";
 
 export default function Profile() {
   const { currentUser } = useSelector((state: any) => state.user);
 
   const adminItem: TabsProps["items"] = [
-    { key: "1", label: "Products", children: <div>Products</div> },
+    { key: "1", label: "Products", children: <ProductList /> },
     { key: "2", label: "Categories", children: <CategoriesList /> },
     { key: "3", label: "Orders", children: <div>Orders</div> },
     { key: "4", label: "Users", children: <div>Users</div> },
