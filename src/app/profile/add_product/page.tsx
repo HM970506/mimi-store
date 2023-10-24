@@ -3,19 +3,20 @@
 import React, { useState } from "react";
 import ProductForm from "../component/ProductForm";
 import axios from "axios";
-import { message } from "antd";
+import { UploadFile, message } from "antd";
 import { useRouter } from "next/navigation";
+import { getUploadedImage } from "@/helpers/imageHandling";
 
 export default function AddProduct() {
   const [loading, setLoading] = useState(false);
-
+  const [selectedFiles, setSelectedFiles] = useState<UploadFile<any>[]>([]);
   const router = useRouter();
 
   const addProduct = async (value: any) => {
     try {
       setLoading(true);
-      value.images = []; //임시값
-      console.log(value);
+      const imagesUrls = await getUploadedImage(selectedFiles);
+      value.images = imagesUrls;
       await axios.post("/api/products/set", value);
       message.success("물품 추가 성공");
       router.push("/profile?id=1");
@@ -28,7 +29,11 @@ export default function AddProduct() {
   };
   return (
     <div>
-      <ProductForm onFinish={addProduct} loading={loading} />
+      <ProductForm
+        onFinish={addProduct}
+        setSelectedFiles={setSelectedFiles}
+        loading={loading}
+      />
     </div>
   );
 }

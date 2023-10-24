@@ -8,19 +8,21 @@ import {
   UploadFile,
   message,
 } from "antd";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 export default function ProductForm({
   onFinish,
+  setSelectedFiles,
   loading,
 }: {
   onFinish: any;
+  setSelectedFiles: SetStateAction<any>;
   loading: boolean;
 }) {
   const { Option } = Select;
-  const [selectedFiles, setSelectedFiles] = useState<UploadFile<any>[]>([]);
+
   const [categories, setCategories] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
 
@@ -91,12 +93,11 @@ export default function ProductForm({
           listType="picture-card"
           className="avatar-uploader"
           multiple
-          fileList={selectedFiles}
           beforeUpload={(file) => {
             const isJpgOrPng =
               file.type === "image/jpeg" || file.type === "image/png";
             if (!isJpgOrPng) message.error("You can only upload JPG/PNG file!");
-            else setSelectedFiles([...selectedFiles, file]);
+            else setSelectedFiles((x: any) => [...x, file]);
 
             return false;
           }}
