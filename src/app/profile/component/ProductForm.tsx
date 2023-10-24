@@ -5,6 +5,7 @@ import {
   InputNumber,
   Select,
   Upload,
+  UploadFile,
   message,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -12,14 +13,14 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 export default function ProductForm({
-  selectedFiles,
-  setSelectedFiles,
+  onFinish,
+  loading,
 }: {
-  selectedFiles: any;
-  setSelectedFiles: any;
+  onFinish: any;
+  loading: boolean;
 }) {
   const { Option } = Select;
-
+  const [selectedFiles, setSelectedFiles] = useState<UploadFile<any>[]>([]);
   const [categories, setCategories] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
 
@@ -29,11 +30,8 @@ export default function ProductForm({
 
   const getCategoryList = async () => {
     const response = await axios.post("/api/categories/get");
-    console.log(response);
     setCategories(response.data.data);
   };
-
-  const onFinish = async () => {};
 
   const UploadButton = () => {
     return (
@@ -47,22 +45,18 @@ export default function ProductForm({
   return (
     <div>
       <Form name="nest-messages" onFinish={onFinish} style={{ maxWidth: 600 }}>
-        <Form.Item
-          name={["user", "name"]}
-          label="Name"
-          rules={[{ required: true }]}
-        >
+        <Form.Item name={"name"} label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item
-          name={["user", "Description"]}
+          name={"description"}
           label="Descrition"
           rules={[{ required: true }]}
         >
           <Input.TextArea />
         </Form.Item>
         <Form.Item
-          name={["user", "price"]}
+          name={"price"}
           label="Price"
           rules={[{ type: "number", min: 0, required: true }]}
         >
@@ -75,10 +69,9 @@ export default function ProductForm({
           rules={[{ required: true }]}
         >
           <Select placeholder="Select Category">
-            {categories.map((category: { name: string }, key) => {
-              console.log(category);
+            {categories.map((category: { name: string; _id: string }, key) => {
               return (
-                <Option key={`category${key}`} value={category.name}>
+                <Option key={`category${key}`} value={category._id}>
                   {category.name}
                 </Option>
               );
@@ -86,7 +79,7 @@ export default function ProductForm({
           </Select>
         </Form.Item>
         <Form.Item
-          name={["user", "stock"]}
+          name={"stock"}
           label="Count in Stock"
           rules={[{ type: "number", min: 0, required: true }]}
         >
@@ -115,7 +108,7 @@ export default function ProductForm({
         </Upload>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Save
           </Button>
         </Form.Item>
