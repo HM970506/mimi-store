@@ -1,11 +1,27 @@
-import { Button, Form, Input, InputNumber, Select, Upload } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Upload,
+  message,
+} from "antd";
 import { useEffect, useState } from "react";
-import { UploadOutlined } from "@ant-design/icons";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-export default function ProductForm() {
+
+export default function ProductForm({
+  selectedFiles,
+  setSelectedFiles,
+}: {
+  selectedFiles: any;
+  setSelectedFiles: any;
+}) {
   const { Option } = Select;
 
   const [categories, setCategories] = useState([]);
+  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     getCategoryList();
@@ -18,6 +34,16 @@ export default function ProductForm() {
   };
 
   const onFinish = async () => {};
+
+  const UploadButton = () => {
+    return (
+      <div>
+        {imageLoading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>Upload</div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <Form name="nest-messages" onFinish={onFinish} style={{ maxWidth: 600 }}>
@@ -66,15 +92,28 @@ export default function ProductForm() {
         >
           <InputNumber />
         </Form.Item>
-        <Form.Item
-          name="thumbnail"
-          label="Thumbnail"
-          rules={[{ required: true }]}
+
+        <Upload
+          name="avatar"
+          listType="picture-card"
+          className="avatar-uploader"
+          multiple
+          fileList={selectedFiles}
+          beforeUpload={(file) => {
+            const isJpgOrPng =
+              file.type === "image/jpeg" || file.type === "image/png";
+            if (!isJpgOrPng) message.error("You can only upload JPG/PNG file!");
+            else setSelectedFiles([...selectedFiles, file]);
+
+            return false;
+          }}
+          onChange={({ fileList }) => {
+            setSelectedFiles(fileList);
+          }}
         >
-          <Upload name="logo" action="/upload.do" listType="picture">
-            <Button icon={<UploadOutlined />}>upload</Button>
-          </Upload>
-        </Form.Item>
+          <UploadButton />
+        </Upload>
+
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Save

@@ -1,12 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import ProductForm from "../component/ProductForm";
 
 export default function AddProduct() {
+  const [selectedFiles, setSelecteFiles] = useState<[]>([]);
   return (
     <div>
-      <ProductForm />
+      <ProductForm
+        selectedFiles={selectedFiles}
+        setSelectedFiles={setSelecteFiles}
+      />
     </div>
   );
 }
