@@ -25,6 +25,10 @@ export const productSchema = new mongoose.Schema(
   }
 );
 
+//새로 만들어질 경우 기존 모델 삭제
+if (mongoose.models && mongoose.models["products"])
+  delete mongoose.models["products"];
+
 const Product =
   mongoose.models["products"] || mongoose.model("products", productSchema);
 
