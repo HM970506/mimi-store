@@ -9,7 +9,10 @@ export const validateJWT = async (request: NextRequest) => {
     if (!token)
       return NextResponse.redirect(new URL("/auth/login", request.url));
 
-    const decryptedToken: any = jwt.verify(token, process.env.jwt_secret!);
+    const decryptedToken: any = jwt.verify(
+      token,
+      process.env.NEXT_PUBLIC_jwt_secret!
+    );
 
     return decryptedToken.id;
   } catch (e: any) {

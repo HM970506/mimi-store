@@ -89,9 +89,7 @@ export default function ProductForm({
         </Form.Item>
 
         <Upload
-          name="avatar"
           listType="picture-card"
-          className="avatar-uploader"
           multiple
           beforeUpload={(file) => {
             const isJpgOrPng =
@@ -100,9 +98,6 @@ export default function ProductForm({
             else setSelectedFiles((x: any) => [...x, file]);
 
             return false;
-          }}
-          onChange={({ fileList }) => {
-            setSelectedFiles(fileList);
           }}
         >
           <UploadButton />

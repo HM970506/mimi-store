@@ -3,13 +3,16 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 export const getUploadedImage = async (files: any) => {
   try {
+    console.log(files);
+    //이미지를 업로드하고 참조를 가져옴
     const storage = getStorage(firebase);
 
-    //이미지를 업로드하고 참조를 가져옴
+    console.log(storage);
+
     const imageRefs = await Promise.all(
       files.map((file: any) => {
-        const path = ref(storage, `products/${file.name}`);
-        return uploadBytes(path, file);
+        const storageRef = ref(storage, `products/${file.name}`);
+        return uploadBytes(storageRef, file);
       })
     );
 

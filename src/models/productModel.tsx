@@ -13,7 +13,7 @@ export const productSchema = new mongoose.Schema(
     description: { type: String, require: true },
     price: { type: Number, require: true },
     stock: { type: Number, required: true, default: 100 },
-    images: { type: Array, reqiure: true, default: [] },
+    images: { type: [], reqiure: true, default: [] },
     created: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
