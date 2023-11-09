@@ -59,7 +59,7 @@ export default function CategoriesList() {
 
   const deleteCategory = async (id: string) => {
     try {
-      setGetLoading(true); //왜 안먹히지
+      setGetLoading(true);
       await axios.delete(`/api/categories/${id}`);
       await getDatas();
     } catch (e: any) {

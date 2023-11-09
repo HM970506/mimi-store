@@ -4,7 +4,7 @@ import { Children, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CategoriesList from "./component/CategoriesList";
 import { useRouter, useSearchParams } from "next/navigation";
-import ProductList from "./component/ProductList";
+import ProductList from "./component/ProductList.1";
 
 export default function Profile() {
   const { currentUser } = useSelector((state: any) => state.user);
