@@ -1,4 +1,4 @@
-import { Button, Table, message } from "antd";
+import { Button, Carousel, Table, message } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,7 +28,6 @@ interface productType {
   key: number;
   name: string;
   description: string;
-  category: string;
   price: number;
   stock: number;
   button: any;
@@ -75,21 +74,22 @@ export default function ProductList() {
           return {
             key: key,
             image: (
-              <>
+              <Carousel
+                dotPosition="bottom"
+                style={{ width: "100px", height: "100px" }}
+              >
                 {data.images.map((url: string, key2: number) => (
-                  <Image
+                  <div
+                    className="bg-red-300 w-[100px] h-[100px]"
                     key={`image_${key}${key2}`}
-                    src={url}
-                    alt="image"
-                    className="w-20 h-20 object-cover"
-                    fill
-                  />
+                  >
+                    <Image src={url} alt="image" width={100} height={100} />
+                  </div>
                 ))}
-              </>
+              </Carousel>
             ),
             name: data.name,
             description: data.description,
-            category: data.category,
             price: data.price,
             stock: data.stock,
             button: (
