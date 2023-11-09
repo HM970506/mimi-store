@@ -2,10 +2,11 @@ import { Button, Table, message } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const columns = [
-  { title: "이미지", dataIndex: "image", key: "image" },
-  { title: "물품명", dataIndex: "name", key: "name" },
+  { title: "제품", dataIndex: "image", key: "image" },
+  { title: "제품명", dataIndex: "name", key: "name" },
   { title: "카테고리", dataIndex: "category", key: "category" },
   { title: "설명", dataIndex: "description", key: "description" },
   { title: "가격", dataIndex: "price", key: "price" },
@@ -69,7 +70,6 @@ export default function ProductList() {
 
   useEffect(() => {
     if (datas.length) {
-      console.log(datas);
       const processedData: productType[] = datas.map(
         (data: dataType, key: number) => {
           return {
@@ -77,7 +77,13 @@ export default function ProductList() {
             image: (
               <>
                 {data.images.map((url: string, key2: number) => (
-                  <img key={`image_${key}${key2}`} src={url} />
+                  <Image
+                    key={`image_${key}${key2}`}
+                    src={url}
+                    alt="image"
+                    className="w-20 h-20 object-cover"
+                    fill
+                  />
                 ))}
               </>
             ),
