@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const columns = [
+  { title: "이미지", dataIndex: "image", key: "image" },
   { title: "물품명", dataIndex: "name", key: "name" },
   { title: "카테고리", dataIndex: "category", key: "category" },
   { title: "설명", dataIndex: "description", key: "description" },
   { title: "가격", dataIndex: "price", key: "price" },
   { title: "재고", dataIndex: "stock", key: "stock" },
-  { title: "이미지", dataIndex: "image", key: "image" },
+
   { title: " ", dataIndex: "button", key: "button" },
 ];
 
@@ -20,6 +21,7 @@ interface dataType {
   price: number;
   stock: number;
   _id: string;
+  images: [];
 }
 interface productType {
   key: number;
@@ -67,10 +69,18 @@ export default function ProductList() {
 
   useEffect(() => {
     if (datas.length) {
+      console.log(datas);
       const processedData: productType[] = datas.map(
         (data: dataType, key: number) => {
           return {
             key: key,
+            image: (
+              <>
+                {data.images.map((url: string, key2: number) => (
+                  <img key={`image_${key}${key2}`} src={url} />
+                ))}
+              </>
+            ),
             name: data.name,
             description: data.description,
             category: data.category,

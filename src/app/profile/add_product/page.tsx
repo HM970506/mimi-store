@@ -15,7 +15,8 @@ export default function AddProduct() {
   const addProduct = async (value: any) => {
     try {
       setLoading(true);
-      const imagesUrls = await getUploadedImage(selectedFiles);
+      const imagesUrls = await getUploadedImage(value.name, selectedFiles);
+
       value.images = imagesUrls;
       await axios.post("/api/products/set", value);
       message.success("물품 추가 성공");
