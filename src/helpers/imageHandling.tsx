@@ -1,5 +1,30 @@
 import { firebase } from "@/firebase";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+
+export const removeBeforeData = async (productName: string) => {
+  const storage = getStorage(firebase);
+
+  //해당 폴더의 이미지 목록을 가져옴
+  const listRef = ref(storage, `products/${productName}`);
+  const imageList = (await listAll(listRef)) || [];
+
+  //가져온 모든 이미지 목록을 삭제함
+  const response = await Promise.all(
+    imageList.items.map((item) => {
+      const desertRef = ref(storage, `products/${productName}/${item.name}`);
+      const deleteResponse = deleteObject(desertRef);
+      return deleteResponse;
+    })
+  );
+  return response;
+};
 
 export const getUploadedImage = async (productName: string, files: any) => {
   try {

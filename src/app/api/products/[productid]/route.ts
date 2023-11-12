@@ -38,3 +38,19 @@ export async function DELETE(
     return NextResponse.json({ message: e.message }, { status: 500 });
   }
 }
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { productid: string } }
+) {
+  try {
+    //운영자 요청인지 확인
+    const userId = await validateJWT(request);
+
+    const product = await Product.findById(params.productid);
+
+    return NextResponse.json(product);
+  } catch (e: any) {
+    return NextResponse.json({ message: e.message }, { status: 500 });
+  }
+}

@@ -5,7 +5,6 @@ import {
   InputNumber,
   Select,
   Upload,
-  UploadFile,
   message,
 } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
@@ -16,10 +15,12 @@ export default function ProductForm({
   onFinish,
   setSelectedFiles,
   loading,
+  initValue,
 }: {
   onFinish: any;
   setSelectedFiles: SetStateAction<any>;
   loading: boolean;
+  initValue: any;
 }) {
   const { Option } = Select;
 
@@ -29,6 +30,10 @@ export default function ProductForm({
   useEffect(() => {
     getCategoryList();
   }, []);
+
+  useEffect(() => {
+    console.log(initValue);
+  }, [initValue]);
 
   const getCategoryList = async () => {
     const response = await axios.post("/api/categories/get");
@@ -46,7 +51,12 @@ export default function ProductForm({
 
   return (
     <div>
-      <Form name="nest-messages" onFinish={onFinish} style={{ maxWidth: 600 }}>
+      <Form
+        initialValues={initValue}
+        name="nest-messages"
+        onFinish={onFinish}
+        style={{ maxWidth: 600 }}
+      >
         <Form.Item name={"name"} label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>

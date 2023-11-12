@@ -106,7 +106,7 @@ export default function ProductList() {
                   key={"edit" + key}
                   type="primary"
                   onClick={() => {
-                    // setEditModal(data);
+                    router.push(`/profile/edit_product/${data._id}`);
                   }}
                 >
                   Edit
