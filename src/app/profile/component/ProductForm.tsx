@@ -14,10 +14,12 @@ import axios from "axios";
 export default function ProductForm({
   onFinish,
   setSelectedFiles,
+  selectedFiles,
   loading,
   initValue,
 }: {
   onFinish: any;
+  selectedFiles: any[];
   setSelectedFiles: SetStateAction<any>;
   loading: boolean;
   initValue: any;
@@ -30,10 +32,6 @@ export default function ProductForm({
   useEffect(() => {
     getCategoryList();
   }, []);
-
-  useEffect(() => {
-    console.log(initValue);
-  }, [initValue]);
 
   const getCategoryList = async () => {
     const response = await axios.post("/api/categories/get");
@@ -101,12 +99,15 @@ export default function ProductForm({
         <Upload
           listType="picture-card"
           multiple
+          fileList={selectedFiles}
           beforeUpload={(file) => {
             const isJpgOrPng =
               file.type === "image/jpeg" || file.type === "image/png";
             if (!isJpgOrPng) message.error("You can only upload JPG/PNG file!");
-            else setSelectedFiles((x: any) => [...x, file]);
-
+            else {
+              console.log(file);
+              setSelectedFiles((x: any) => [...x, file]);
+            }
             return false;
           }}
         >

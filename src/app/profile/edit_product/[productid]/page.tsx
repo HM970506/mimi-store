@@ -22,8 +22,11 @@ function EditProduct({ params }: { params: any }) {
     try {
       setLoading(true);
 
-      const response = await axios.get(`/api/products/${params.producid}`);
+      const response = await axios.get(`/api/products/${params.productid}`);
       setProduct(response.data);
+
+      console.log("저장 데이터", response.data);
+
       setSelectedFiles(response.data.images || []);
       setLoading(false);
     } catch (err) {
@@ -35,12 +38,12 @@ function EditProduct({ params }: { params: any }) {
     try {
       setLoading(true);
 
-      await removeBeforeData(value.name);
+      const imageReset = await removeBeforeData(value.name);
       //수정시 aws에 올라가 있던 기존 이미지들은 전부 삭제
-
+      console.log("삭제 됐나", imageReset);
       const imagesUrls = await getUploadedImage(value.name, selectedFiles);
       value.images = imagesUrls;
-      await axios.post(`/api/products/${params.productid}`, value);
+      await axios.put(`/api/products/${params.productid}`, value);
       message.success("물품 수정 성공");
       router.push("/profile?id=1");
     } catch (e) {
@@ -56,6 +59,7 @@ function EditProduct({ params }: { params: any }) {
         <ProductForm
           onFinish={editProductSave}
           setSelectedFiles={setSelectedFiles}
+          selectedFiles={selectedFiles}
           loading={loading}
           initValue={product}
         />

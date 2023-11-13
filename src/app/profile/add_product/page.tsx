@@ -34,6 +34,8 @@ export default function AddProduct() {
         onFinish={addProduct}
         setSelectedFiles={setSelectedFiles}
         loading={loading}
+        selectedFiles={selectedFiles}
+        initValue={undefined}
       />
     </div>
   );

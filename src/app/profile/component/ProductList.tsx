@@ -3,6 +3,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { removeBeforeData } from "@/helpers/imageHandling";
 
 const columns = [
   { title: "제품", dataIndex: "image", key: "image" },
@@ -55,10 +56,11 @@ export default function ProductList() {
     }
   };
 
-  const deleteProduct = async (id: string) => {
+  const deleteProduct = async (id: string, name: string) => {
     try {
       setGetLoading(true);
       await axios.delete(`/api/products/${id}`);
+      await removeBeforeData(name);
       await getDatas();
     } catch (e: any) {
       message.error(e.message);
@@ -97,7 +99,7 @@ export default function ProductList() {
                 <Button
                   key={"del" + key}
                   onClick={() => {
-                    deleteProduct(data._id);
+                    deleteProduct(data._id, data.name);
                   }}
                 >
                   Delete
