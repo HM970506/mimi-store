@@ -25,9 +25,28 @@ function EditProduct({ params }: { params: any }) {
       const response = await axios.get(`/api/products/${params.productid}`);
       setProduct(response.data);
 
-      console.log("저장 데이터", response.data);
+      const imageFiles = await Promise.all(
+        response.data.images.map(async (url: string, key: number) => {
+          const imageUrl = url;
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const fileName = `image_${key}`;
 
-      setSelectedFiles(response.data.images || []);
+          const file: UploadFile<any> = {
+            uid: fileName,
+            name: fileName,
+            status: "done", // 파일 상태를 나타내는 값입니다.
+            url: imageUrl, // 파일의 다운로드 URL입니다.
+            thumbUrl: imageUrl, // 필요한 경우 썸네일 URL을 지정할 수 있습니다.
+            size: blob.size, // 파일 크기
+            type: blob.type, // 파일 타입
+          };
+          return file;
+        })
+      );
+
+      console.log(imageFiles);
+      setSelectedFiles(imageFiles);
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -38,9 +57,9 @@ function EditProduct({ params }: { params: any }) {
     try {
       setLoading(true);
 
+      //기존 이미지 삭제
       const imageReset = await removeBeforeData(value.name);
-      //수정시 aws에 올라가 있던 기존 이미지들은 전부 삭제
-      console.log("삭제 됐나", imageReset);
+
       const imagesUrls = await getUploadedImage(value.name, selectedFiles);
       value.images = imagesUrls;
       await axios.put(`/api/products/${params.productid}`, value);
