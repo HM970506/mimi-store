@@ -15,6 +15,7 @@ export default function AddProduct() {
   const addProduct = async (value: any) => {
     try {
       setLoading(true);
+      console.log(selectedFiles);
       const imagesUrls = await getUploadedImage(value.name, selectedFiles);
 
       value.images = imagesUrls;
