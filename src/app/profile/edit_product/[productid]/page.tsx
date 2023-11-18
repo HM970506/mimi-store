@@ -5,7 +5,11 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProductForm from "../../component/ProductForm";
-import { getUploadedImage, removeBeforeData } from "@/helpers/imageHandling";
+import {
+  editImages,
+  getUploadedImage,
+  removeBeforeData,
+} from "@/helpers/imageHandling";
 import Loading from "@/app/loading";
 
 function EditProduct({ params }: { params: any }) {
@@ -28,18 +32,15 @@ function EditProduct({ params }: { params: any }) {
       const imageFiles = await Promise.all(
         response.data.images.map(async (url: string, key: number) => {
           const imageUrl = url;
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
           const fileName = `image_${key}`;
 
-          const file: UploadFile<any> = {
+          const file = {
             uid: fileName,
             name: fileName,
             status: "done", // 파일 상태를 나타내는 값입니다.
             url: imageUrl, // 파일의 다운로드 URL입니다.
             thumbUrl: imageUrl, // 필요한 경우 썸네일 URL을 지정할 수 있습니다.
-            size: blob.size, // 파일 크기
-            type: blob.type, // 파일 타입
+            type: "image/png",
           };
           return file;
         })
@@ -57,12 +58,10 @@ function EditProduct({ params }: { params: any }) {
     try {
       setLoading(true);
 
-      //기존 이미지 삭제
-      const imageReset = await removeBeforeData(value.name);
-
-      const imagesUrls = await getUploadedImage(value.name, selectedFiles);
-      value.images = imagesUrls;
+      const imageEditUrls = await editImages(value.name, selectedFiles);
+      value.images = imageEditUrls;
       await axios.put(`/api/products/${params.productid}`, value);
+
       message.success("물품 수정 성공");
       router.push("/profile?id=1");
     } catch (e) {

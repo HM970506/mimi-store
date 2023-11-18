@@ -3,18 +3,21 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Select,
   Upload,
+  UploadFile,
   message,
 } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { RcFile } from "antd/es/upload";
 
 export default function ProductForm({
   onFinish,
-  setSelectedFiles,
-  selectedFiles,
+  setSelectedFiles: setFileList,
+  selectedFiles: fileList,
   loading,
   initValue,
 }: {
@@ -28,6 +31,9 @@ export default function ProductForm({
 
   const [categories, setCategories] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
 
   useEffect(() => {
     getCategoryList();
@@ -46,6 +52,14 @@ export default function ProductForm({
       </div>
     );
   };
+
+  const getBase64 = (file: RcFile): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
   return (
     <div>
@@ -99,20 +113,39 @@ export default function ProductForm({
         <Upload
           listType="picture-card"
           multiple
-          fileList={selectedFiles}
+          fileList={fileList}
+          onChange={({ fileList: newFileList }) => {
+            setFileList(newFileList);
+          }}
+          onPreview={async (file: UploadFile) => {
+            if (!file.url && !file.preview)
+              file.preview = await getBase64(file.originFileObj as RcFile);
+
+            setPreviewImage(file.url || (file.preview as string));
+            setPreviewOpen(true);
+            setPreviewTitle(
+              file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
+            );
+          }}
           beforeUpload={(file) => {
             const isJpgOrPng =
               file.type === "image/jpeg" || file.type === "image/png";
             if (!isJpgOrPng) message.error("You can only upload JPG/PNG file!");
-            else {
-              console.log(file);
-              setSelectedFiles((x: any) => [...x, file]);
-            }
-            return false;
+            return false; //놀랍게도 이게 true면 그냥 전송된다...
           }}
         >
           <UploadButton />
         </Upload>
+        <Modal
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={() => {
+            setPreviewOpen(false);
+          }}
+        >
+          <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>

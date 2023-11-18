@@ -61,6 +61,7 @@ export default function ProductList() {
       setGetLoading(true);
       await axios.delete(`/api/products/${id}`);
       await removeBeforeData(name);
+
       await getDatas();
     } catch (e: any) {
       message.error(e.message);
@@ -70,7 +71,7 @@ export default function ProductList() {
   };
 
   useEffect(() => {
-    if (datas.length) {
+    if (Array.isArray(datas)) {
       const processedData: productType[] = datas.map(
         (data: dataType, key: number) => {
           return {
@@ -81,10 +82,7 @@ export default function ProductList() {
                 style={{ width: "100px", height: "100px" }}
               >
                 {data.images.map((url: string, key2: number) => (
-                  <div
-                    className="bg-red-300 w-[100px] h-[100px]"
-                    key={`image_${key}${key2}`}
-                  >
+                  <div key={`image_${key}${key2}`}>
                     <Image src={url} alt="image" width={100} height={100} />
                   </div>
                 ))}
