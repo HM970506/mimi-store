@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { removeBeforeData } from "@/helpers/imageHandling";
+import { ColumnGroupType, ColumnType } from "antd/es/table";
 
 interface dataType {
   name: string;
@@ -16,9 +17,10 @@ interface dataType {
 }
 interface productType {
   key: number;
+  category: any;
   name: string;
   description: string;
-  price: number;
+  price: string;
   stock: number;
   button: any;
 }
@@ -28,7 +30,7 @@ export default function ProductList() {
 
   const [datas, setDatas] = useState([]);
   const [products, setProducts] = useState<productType[]>([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any>([]);
   const [getLoading, setGetLoading] = useState(false);
 
   const columns = [
@@ -38,15 +40,14 @@ export default function ProductList() {
       dataIndex: "name",
       key: "name",
 
-      sorter: (a: any, b: any) => (a.name > b.name ? 1 : -1),
+      sorter: (a: productType, b: productType) => (a.name > b.name ? 1 : -1),
     },
     {
       title: "카테고리",
       dataIndex: "category",
       key: "category",
-      onFilter: (value: string, record: any) => {
-        return record.category === value;
-      },
+      onFilter: (value: string, record: productType) =>
+        record.category === value,
 
       filters: categories.map((category: any) => {
         return { text: category.name, value: category.name };
@@ -63,16 +64,14 @@ export default function ProductList() {
       dataIndex: "price",
       key: "price",
       sorter: (a: any, b: any) =>
-        parseInt(a.price.replaceAll(",", "")) <
-        parseInt(b.price.replaceAll(",", ""))
-          ? 1
-          : -1,
+        parseInt(a.price.replaceAll(",", "")) -
+        parseInt(b.price.replaceAll(",", "")),
     },
     {
       title: "재고",
       dataIndex: "stock",
       key: "stock",
-      sorter: (a: any, b: any) => (a < b ? 1 : -1),
+      sorter: (a: any, b: any) => a.stock - b.stock,
     },
 
     { title: " ", dataIndex: "button", key: "button" },

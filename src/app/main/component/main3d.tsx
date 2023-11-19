@@ -3,26 +3,61 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import axios from "axios";
 
 export default function Main3d() {
   const [scene, setScene] = useState<any>(new THREE.Scene());
   const [camera, setCamera] = useState<any>(
-    new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      5000
-    )
+    new THREE.PerspectiveCamera(75, 1280 / 400, 0.1, 5000)
   );
-  const [renderer, setRenderer] = useState<any>(new THREE.WebGLRenderer());
+  const [renderer, setRenderer] = useState<any>(
+    new THREE.WebGLRenderer({ alpha: true })
+  );
   const [textureLoader, setTextureLoader] = useState<any>(
     new THREE.TextureLoader()
   );
   const [mouse, setMouse] = useState(new THREE.Vector2());
   const mount = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    scene.background = new THREE.Color("white");
+    const light = new THREE.DirectionalLight(0xffffff, 10);
+    scene.add(light);
+    camera.position.y = 70;
+    camera.position.z = 130;
+    camera.lookAt(new THREE.Vector3(0, 40, 0));
+
+    //camera.poisitiob값이 없으면 orbitcontrols는 동작하지 않는다!
+    // const controls = new OrbitControls(camera, renderer.domElement);
+
+    // controls.target.set(0, 0, 0);
+    // controls.autoRotate = true;
+
+    heart();
+    rotation();
+    text();
+  }, []);
+
+  useEffect(() => {
+    if (mount.current) {
+      renderer.setSize(
+        window.innerWidth * 0.9,
+        ((window.innerWidth * 0.9) / 1280) * 400
+      );
+      //렌더링 크기. 값이 작을수록 고성능이 필요하다.
+      //렌더링 크기를 유지하되 더 낮은 해상도로 렌더링하려면 뒤에 false(updateStyle)를 붙여주자.
+
+      renderer.render(scene, camera);
+
+      if (!mount.current.querySelector("canvas"))
+        mount.current.appendChild(renderer.domElement);
+    }
+    return () => {
+      // 컴포넌트가 언마운트될 때 Three.js 리소스 정리
+      if (renderer) renderer.dispose();
+    };
+  }, [mount]);
 
   function animate(cube: any, initialAngle: any) {
     if (renderer) {
@@ -57,25 +92,6 @@ export default function Main3d() {
     }
   }
 
-  useEffect(() => {
-    scene.background = new THREE.Color("white");
-    const light = new THREE.DirectionalLight(0xffffff, 10);
-    scene.add(light);
-    camera.position.y = 100;
-    camera.position.z = 180;
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-    //camera.poisitiob값이 없으면 orbitcontrols는 동작하지 않는다!
-    const controls = new OrbitControls(camera, renderer.domElement);
-
-    controls.target.set(0, 0, 0);
-    controls.autoRotate = true;
-
-    heart();
-    rotation();
-    text();
-  }, []);
-
   const heart = async () => {
     const loader = new GLTFLoader();
     loader.load(`/glft/heart/scene.gltf`, (gltf) => {
@@ -89,24 +105,39 @@ export default function Main3d() {
   };
 
   const rotation = async () => {
-    //프로미스로 수정하기
+    const response = await axios.post("/api/products/get");
+    const products = response.data.data;
+    console.log(products);
+    const promises = [];
+
     for (let i = 0; i < 10; i++) {
-      const angle = (i / 10) * Math.PI * 2; // 360도를 objectCount로 나눈 각도
+      const angle = (i / 10) * Math.PI * 2;
 
-      const geometry = new THREE.BoxGeometry(20, 20, 0.1);
-      const texture = await textureLoader.loadAsync("image/bear.jpg");
-      const material = new THREE.MeshBasicMaterial({ map: texture });
-      const object = new THREE.Mesh(geometry, material);
-      object.position.x = Math.sin(angle) * 100;
-      object.position.y = 50;
-      object.position.z = Math.cos(angle) * 100;
-      object.scale.x = 1;
-      object.scale.y = 1;
+      const geometry = new THREE.BoxGeometry(20, 20, 0.01);
+      const promise = textureLoader
+        .loadAsync(products[i].images[0])
+        .then((texture: any) => {
+          const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            //side: THREE.DoubleSide,
+          });
+          const object = new THREE.Mesh(geometry, material);
 
-      scene.add(object);
+          object.position.x = Math.sin(angle) * 100;
+          object.position.y = 50;
+          object.position.z = Math.cos(angle) * 100;
+          object.scale.x = 1;
+          object.scale.y = 1;
 
-      animate(object, angle);
+          scene.add(object);
+          animate(object, angle);
+        });
+
+      promises.push(promise);
     }
+
+    await Promise.all(promises);
   };
 
   const text = async () => {
@@ -126,23 +157,6 @@ export default function Main3d() {
     // scene.add(textMesh);
     // renderer.render()(scene, camera);
   };
-
-  useEffect(() => {
-    if (mount.current) {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      //렌더링 크기. 값이 작을수록 고성능이 필요하다.
-      //렌더링 크기를 유지하되 더 낮은 해상도로 렌더링하려면 뒤에 false(updateStyle)를 붙여주자.
-
-      renderer.render(scene, camera);
-
-      if (!mount.current.querySelector("canvas"))
-        mount.current.appendChild(renderer.domElement);
-    }
-    return () => {
-      // 컴포넌트가 언마운트될 때 Three.js 리소스 정리
-      if (renderer) renderer.dispose();
-    };
-  }, [mount]);
 
   // const canvasClick=()=>{
   //   const      raycaster = new THREE.Raycaster();
@@ -178,6 +192,7 @@ export default function Main3d() {
   return (
     <div
       ref={mount}
+      className="flex justify-center align-middle"
       onClick={(event: any) => {
         event.preventDefault();
 

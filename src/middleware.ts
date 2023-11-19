@@ -14,8 +14,10 @@ export async function middleware(request: NextRequest) {
   if (!token && !isPublicRoute)
     return NextResponse.redirect(new URL("/auth/login", request.url));
   if (token && isPublicRoute)
-    return NextResponse.redirect(new URL("/", request.url));
-  return NextResponse.next(); //나머지 프로세스가 진행된다는 뜻
+    return NextResponse.redirect(new URL("/main", request.url));
+
+  if (now === "/") return NextResponse.redirect(new URL("/main", request.url));
+  else return NextResponse.next(); //나머지 프로세스가 진행된다는 뜻
 }
 
 export const config = {
