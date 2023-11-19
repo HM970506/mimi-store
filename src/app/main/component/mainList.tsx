@@ -3,6 +3,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { cookies } from "next/headers";
+import CartButton from "./cartButton";
 
 //서버에서 데이터 주고받기
 //클라이언트에서는 자동으로 쿠키 넣어주지만, 서버에서는 브라우저에 직접 접근이 불가능하므로 수동으로 넣어야 한다
@@ -47,7 +48,9 @@ export default async function MainList() {
                 className="object-contain w-60"
               />
             </div>
-            <p className="m-5"> {product.name}</p>
+            <p className="m-5 flex justify-between">
+              {product.name} <CartButton product={product} />
+            </p>
           </div>
         );
       })}
