@@ -5,17 +5,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { removeBeforeData } from "@/helpers/imageHandling";
 
-const columns = [
-  { title: "제품", dataIndex: "image", key: "image" },
-  { title: "제품명", dataIndex: "name", key: "name" },
-  { title: "카테고리", dataIndex: "category", key: "category" },
-  { title: "설명", dataIndex: "description", key: "description" },
-  { title: "가격", dataIndex: "price", key: "price" },
-  { title: "재고", dataIndex: "stock", key: "stock" },
-
-  { title: " ", dataIndex: "button", key: "button" },
-];
-
 interface dataType {
   name: string;
   description: string;
@@ -39,7 +28,55 @@ export default function ProductList() {
 
   const [datas, setDatas] = useState([]);
   const [products, setProducts] = useState<productType[]>([]);
+  const [categories, setCategories] = useState([]);
   const [getLoading, setGetLoading] = useState(false);
+
+  const columns = [
+    { title: "제품", dataIndex: "image", key: "image" },
+    {
+      title: "제품명",
+      dataIndex: "name",
+      key: "name",
+
+      sorter: (a: any, b: any) => (a.name > b.name ? 1 : -1),
+    },
+    {
+      title: "카테고리",
+      dataIndex: "category",
+      key: "category",
+      onFilter: (value: string, record: any) => {
+        return record.category === value;
+      },
+
+      filters: categories.map((category: any) => {
+        return { text: category.name, value: category.name };
+      }),
+    },
+    {
+      title: "설명",
+      dataIndex: "description",
+      key: "description",
+      width: "40%",
+    },
+    {
+      title: "가격",
+      dataIndex: "price",
+      key: "price",
+      sorter: (a: any, b: any) =>
+        parseInt(a.price.replaceAll(",", "")) <
+        parseInt(b.price.replaceAll(",", ""))
+          ? 1
+          : -1,
+    },
+    {
+      title: "재고",
+      dataIndex: "stock",
+      key: "stock",
+      sorter: (a: any, b: any) => (a < b ? 1 : -1),
+    },
+
+    { title: " ", dataIndex: "button", key: "button" },
+  ];
 
   useEffect(() => {
     getDatas();
@@ -48,7 +85,9 @@ export default function ProductList() {
     try {
       setGetLoading(true);
       const response = await axios.post("/api/products/get");
+      const response2 = await axios.post("/api/categories/get");
       setDatas(response.data.data);
+      setCategories(response2.data.data);
     } catch (e: any) {
       message.error(e.message);
     } finally {
@@ -89,8 +128,14 @@ export default function ProductList() {
               </Carousel>
             ),
             name: data.name,
+            category:
+              categories[
+                categories.findIndex(
+                  (value: any) => value._id === data.category
+                )
+              ].name,
             description: data.description,
-            price: data.price,
+            price: data.price.toLocaleString(),
             stock: data.stock,
             button: (
               <div key={key}>
@@ -136,6 +181,7 @@ export default function ProductList() {
           dataSource={products}
           pagination={false}
           loading={getLoading}
+          onChange={async (pagination, filters, sorter: any) => {}}
         />
       </div>
     </div>
